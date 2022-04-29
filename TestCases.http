@@ -1,0 +1,21 @@
+### POST Requests
+POST http://localhost:4004/vehicle-management/KilometerExpenses
+Content-Type: application/json
+
+{
+   "personnelNo":1234,
+   "projectID":5632,
+   "date":"2022-04-30",
+   "expenseType":"Q",
+   "fromLocation":"Kütahya",
+   "destination":"İstanbul",
+   "isOutofTown":true,
+   "distance":275,
+   "distanceUnit":"KM",
+   "amount":350,
+   "currency_code":"EUR",
+   "status":"A"
+}
+
+### GET Requests
+GET http://localhost:4004/vehicle-management/Personnels?$expand=projects

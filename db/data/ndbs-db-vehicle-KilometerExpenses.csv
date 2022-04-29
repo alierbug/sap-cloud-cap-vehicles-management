@@ -1,0 +1,2 @@
+personnelNo;projectID;date;expenseType;fromLocation;destination;isOutofTown;distance;distanceUnit;amount;currency_code;status
+264397;12345;2022-04-29;G;Eskişehir;İstanbul;true;300;KM;300;TRY;A      
