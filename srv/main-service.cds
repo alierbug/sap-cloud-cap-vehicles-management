@@ -1,6 +1,6 @@
 using {ndbs.db.vehicle as v} from '../db/main.cds';
 
-service VehicleManagement {
+service VehicleManagement @(impl : './main-service.js') {
     entity KilometerExpenses    as projection on v.KilometerExpenses {
         *,
         toPersonnels,
