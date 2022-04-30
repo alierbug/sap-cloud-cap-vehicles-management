@@ -34,4 +34,20 @@ service VehicleManagement @(impl : './main-service.js') {
         toPersonnels,
         toProjects
     };
+
+    entity PersonnelInformation   as projection on Personnels {
+        key email,
+            personnelNo,
+            firstName,
+            lastName,
+            departmentID,
+            levelID,
+            birthCity,
+            birthDate,
+            vehicleID,
+            toDepartments,
+            toLevels,
+            toProjects,
+            toVehicles
+    };
 };

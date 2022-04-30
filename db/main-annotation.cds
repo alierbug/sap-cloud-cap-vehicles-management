@@ -1,6 +1,7 @@
 using {ndbs.db.vehicle as v} from './main';
 
 annotate v.KilometerExpenses with {
+    expenseID    @Common.Label : '{i18n>expenseID}';
     personnelNo  @Common.Label : '{i18n>personnelNo}';
     projectID    @Common.Label : '{i18n>projectID}';
     date         @Common.Label : '{i18n>date}';
@@ -12,6 +13,7 @@ annotate v.KilometerExpenses with {
     distanceUnit @Common.Label : '{i18n>distanceUnit}';
     amount       @Common.Label : '{i18n>amount}'  @Measures.ISOCurrency : currency.code;
     currency     @Common.Label : '{i18n>currency}';
+    period       @Common.Label : '{i18n>period}';
     status       @Common.Label : '{i18n>status}';
 };
 
@@ -24,6 +26,7 @@ annotate v.Personnels with {
     birthCity    @Common.Label : '{i18n>birthCity}';
     birthDate    @Common.Label : '{i18n>birthDate}';
     vehicleID    @Common.Label : '{i18n>vehicleID}';
+    email        @Common.Label : '{i18n>email}';
 };
 
 annotate v.Departments with {
@@ -42,11 +45,12 @@ annotate v.Projects with {
 };
 
 annotate v.Vehicles with {
-    vehicleID @Common.Label : '{i18n>vehicleID}';
-    serialNo  @Common.Label : '{i18n>serialNo}';
-    brand     @Common.Label : '{i18n>brand}';
-    model     @Common.Label : '{i18n>model}';
-    age       @Common.Label : '{i18n>age}';
+    vehicleID    @Common.Label : '{i18n>vehicleID}';
+    licencePlate @Common.Label : '{i18n>licencePlate}';
+    serialNo     @Common.Label : '{i18n>serialNo}';
+    brand        @Common.Label : '{i18n>brand}';
+    model        @Common.Label : '{i18n>model}';
+    age          @Common.Label : '{i18n>age}';
 };
 
 annotate v.PersonnelsofProjects with {

@@ -1,0 +1,36 @@
+<mvc:View controllerName="ndbs.ui.vehiclemanagementui.controller.Homepage"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout"
+    xmlns:uxap="sap.uxap">
+    <Page id="homepage"
+        showHeader="false"
+        busy="{generalJsonModel>/busy}">
+        <content>
+            <uxap:ObjectPageHeaderContent id="ophcExpensesHeader">
+                <uxap:content>
+                    <layout:VerticalLayout>
+                        <Text text="{i18n>licencePlate}"/>
+                        <ObjectIdentifier title="{toVehicles/licencePlate}" />
+                    </layout:VerticalLayout>
+                    <layout:VerticalLayout>
+                        <Text text="{i18n>totalTrip}"/>
+                        <ObjectNumber number="{generalJsonModel>/totalTrip}"
+                            unit="{generalJsonModel>/distanceUnit}"/>
+                    </layout:VerticalLayout>
+                    <layout:VerticalLayout>
+                        <Text text="{i18n>totalAmount}"/>
+                        <ObjectNumber number="{generalJsonModel>/totalAmount}"
+                            unit="{generalJsonModel>/currency}"/>
+                    </layout:VerticalLayout>
+                    <layout:VerticalLayout>
+                        <Text text="{i18n>status}"/>
+                        <ObjectStatus text="{generalJsonModel>/expenseStatusText}"
+                            state="{generalJsonModel>/expenseStatus}"/>
+                    </layout:VerticalLayout>
+                </uxap:content>
+            </uxap:ObjectPageHeaderContent>
+        </content>
+    </Page>
+</mvc:View>

@@ -23,6 +23,7 @@ entity KilometerExpenses {
         };
         amount       : Decimal(15, 2);
         currency     : Currency;
+        period       : String(7);
         @assert.range : true
         status       : String(30) enum {
             A  = 'Onaylandı';
@@ -43,6 +44,7 @@ entity Personnels {
         levelID       : Levels:levelID;
         birthCity     : type of firstName;
         birthDate     : Date;
+        email         : String(160);
         vehicleID     : Vehicles:vehicleID;
         toVehicles    : Association to Vehicles
                             on toVehicles.vehicleID = $self.vehicleID;
@@ -62,7 +64,7 @@ entity Departments {
 };
 
 entity Levels {
-    key levelID     : String(2);
+    key levelID    : String(2);
         levelDescr : String(50);
 };
 
@@ -74,11 +76,12 @@ entity Projects {
 };
 
 entity Vehicles {
-    key vehicleID : Integer;
-        serialNo  : Integer;
-        brand     : String(50);
-        model     : type of brand;
-        age       : Integer;
+    key vehicleID    : Integer;
+        serialNo     : Integer;
+        licencePlate : String(10);
+        brand        : String(50);
+        model        : type of brand;
+        age          : Integer;
 };
 
 entity PersonnelsofProjects {

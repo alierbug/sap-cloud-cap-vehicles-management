@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+        <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml">
+        <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="VehicleManagement" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="KilometerExpenses" EntityType="VehicleManagement.KilometerExpenses">
+                    <NavigationPropertyBinding Path="currency" Target="Currencies"/>
+                    <NavigationPropertyBinding Path="toPersonnels" Target="Personnels"/>
+                    <NavigationPropertyBinding Path="toProjects" Target="Projects"/>
+                </EntitySet>
+                <EntitySet Name="Personnels" EntityType="VehicleManagement.Personnels">
+                    <NavigationPropertyBinding Path="toVehicles" Target="Vehicles"/>
+                    <NavigationPropertyBinding Path="toDepartments" Target="Departments"/>
+                    <NavigationPropertyBinding Path="toLevels" Target="Levels"/>
+                    <NavigationPropertyBinding Path="toProjects" Target="PersonnelsofProjects"/>
+                </EntitySet>
+                <EntitySet Name="Departments" EntityType="VehicleManagement.Departments">
+                    <NavigationPropertyBinding Path="toPersonnels" Target="Personnels"/>
+                </EntitySet>
+                <EntitySet Name="Levels" EntityType="VehicleManagement.Levels"/>
+                <EntitySet Name="Projects" EntityType="VehicleManagement.Projects">
+                    <NavigationPropertyBinding Path="toPersonnels" Target="PersonnelsofProjects"/>
+                </EntitySet>
+                <EntitySet Name="Vehicles" EntityType="VehicleManagement.Vehicles"/>
+                <EntitySet Name="PersonnelsofProjects" EntityType="VehicleManagement.PersonnelsofProjects">
+                    <NavigationPropertyBinding Path="toPersonnels" Target="Personnels"/>
+                    <NavigationPropertyBinding Path="toProjects" Target="Projects"/>
+                </EntitySet>
+                <EntitySet Name="Currencies" EntityType="VehicleManagement.Currencies">
+                    <NavigationPropertyBinding Path="texts" Target="Currencies_texts"/>
+                    <NavigationPropertyBinding Path="localized" Target="Currencies_texts"/>
+                </EntitySet>
+                <EntitySet Name="Currencies_texts" EntityType="VehicleManagement.Currencies_texts"/>
+            </EntityContainer>
+            <EntityType Name="KilometerExpenses">
+                <Key>
+                    <PropertyRef Name="expenseID"/>
+                </Key>
+                <Property Name="expenseID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="personnelNo" Type="Edm.Int32"/>
+                <Property Name="projectID" Type="Edm.Int32"/>
+                <Property Name="date" Type="Edm.Date"/>
+                <Property Name="expenseType" Type="Edm.String" MaxLength="10"/>
+                <Property Name="fromLocation" Type="Edm.String" MaxLength="50"/>
+                <Property Name="destination" Type="Edm.String" MaxLength="50"/>
+                <Property Name="isOutofTown" Type="Edm.Boolean"/>
+                <Property Name="distance" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="distanceUnit" Type="Edm.String" MaxLength="20"/>
+                <Property Name="amount" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <NavigationProperty Name="currency" Type="VehicleManagement.Currencies">
+                    <ReferentialConstraint Property="currency_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+                <Property Name="period" Type="Edm.String" MaxLength="7"/>
+                <Property Name="status" Type="Edm.String" MaxLength="30"/>
+                <NavigationProperty Name="toPersonnels" Type="VehicleManagement.Personnels">
+                    <ReferentialConstraint Property="personnelNo" ReferencedProperty="personnelNo"/>
+                </NavigationProperty>
+                <NavigationProperty Name="toProjects" Type="VehicleManagement.Projects">
+                    <ReferentialConstraint Property="projectID" ReferencedProperty="projectID"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="Personnels">
+                <Key>
+                    <PropertyRef Name="personnelNo"/>
+                </Key>
+                <Property Name="personnelNo" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="firstName" Type="Edm.String" MaxLength="50"/>
+                <Property Name="lastName" Type="Edm.String" MaxLength="50"/>
+                <Property Name="departmentID" Type="Edm.String" MaxLength="4"/>
+                <Property Name="levelID" Type="Edm.String" MaxLength="2"/>
+                <Property Name="birthCity" Type="Edm.String" MaxLength="50"/>
+                <Property Name="birthDate" Type="Edm.Date"/>
+                <Property Name="vehicleID" Type="Edm.Int32"/>
+                <NavigationProperty Name="toVehicles" Type="VehicleManagement.Vehicles">
+                    <ReferentialConstraint Property="vehicleID" ReferencedProperty="vehicleID"/>
+                </NavigationProperty>
+                <NavigationProperty Name="toDepartments" Type="VehicleManagement.Departments" Partner="toPersonnels">
+                    <ReferentialConstraint Property="departmentID" ReferencedProperty="departmentID"/>
+                </NavigationProperty>
+                <NavigationProperty Name="toLevels" Type="VehicleManagement.Levels">
+                    <ReferentialConstraint Property="levelID" ReferencedProperty="levelID"/>
+                </NavigationProperty>
+                <NavigationProperty Name="toProjects" Type="Collection(VehicleManagement.PersonnelsofProjects)" Partner="toPersonnels"/>
+            </EntityType>
+            <EntityType Name="Departments">
+                <Key>
+                    <PropertyRef Name="departmentID"/>
+                </Key>
+                <Property Name="departmentID" Type="Edm.String" MaxLength="4" Nullable="false"/>
+                <Property Name="departmentName" Type="Edm.String" MaxLength="100"/>
+                <NavigationProperty Name="toPersonnels" Type="Collection(VehicleManagement.Personnels)" Partner="toDepartments"/>
+            </EntityType>
+            <EntityType Name="Levels">
+                <Key>
+                    <PropertyRef Name="levelID"/>
+                </Key>
+                <Property Name="levelID" Type="Edm.String" MaxLength="2" Nullable="false"/>
+                <Property Name="levelDescr" Type="Edm.String" MaxLength="50"/>
+            </EntityType>
+            <EntityType Name="Projects">
+                <Key>
+                    <PropertyRef Name="projectID"/>
+                </Key>
+                <Property Name="projectID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="projectName" Type="Edm.String" MaxLength="100"/>
+                <NavigationProperty Name="toPersonnels" Type="Collection(VehicleManagement.PersonnelsofProjects)" Partner="toProjects"/>
+            </EntityType>
+            <EntityType Name="Vehicles">
+                <Key>
+                    <PropertyRef Name="vehicleID"/>
+                </Key>
+                <Property Name="vehicleID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="serialNo" Type="Edm.Int32"/>
+                <Property Name="brand" Type="Edm.String" MaxLength="50"/>
+                <Property Name="model" Type="Edm.String" MaxLength="50"/>
+                <Property Name="age" Type="Edm.Int32"/>
+            </EntityType>
+            <EntityType Name="PersonnelsofProjects">
+                <Key>
+                    <PropertyRef Name="personnelNo"/>
+                    <PropertyRef Name="projectID"/>
+                </Key>
+                <Property Name="personnelNo" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="projectID" Type="Edm.Int32" Nullable="false"/>
+                <NavigationProperty Name="toPersonnels" Type="VehicleManagement.Personnels" Partner="toProjects">
+                    <ReferentialConstraint Property="personnelNo" ReferencedProperty="personnelNo"/>
+                </NavigationProperty>
+                <NavigationProperty Name="toProjects" Type="VehicleManagement.Projects" Partner="toPersonnels">
+                    <ReferentialConstraint Property="projectID" ReferencedProperty="projectID"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="Currencies">
+                <Key>
+                    <PropertyRef Name="code"/>
+                </Key>
+                <Property Name="name" Type="Edm.String" MaxLength="255"/>
+                <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
+                <Property Name="symbol" Type="Edm.String" MaxLength="5"/>
+                <NavigationProperty Name="texts" Type="Collection(VehicleManagement.Currencies_texts)">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="localized" Type="VehicleManagement.Currencies_texts">
+                    <ReferentialConstraint Property="code" ReferencedProperty="code"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="Currencies_texts">
+                <Key>
+                    <PropertyRef Name="locale"/>
+                    <PropertyRef Name="code"/>
+                </Key>
+                <Property Name="locale" Type="Edm.String" MaxLength="14" Nullable="false"/>
+                <Property Name="name" Type="Edm.String" MaxLength="255"/>
+                <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
+            </EntityType>
+            <Annotations Target="VehicleManagement.KilometerExpenses/expenseType">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="G"/>
+                            <PropertyValue Property="Value" String="Gidiş"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="R"/>
+                            <PropertyValue Property="Value" String="Dönüş"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="VehicleManagement.KilometerExpenses/distanceUnit">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="KM"/>
+                            <PropertyValue Property="Value" String="Kilometre"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="M"/>
+                            <PropertyValue Property="Value" String="Metre"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="VehicleManagement.KilometerExpenses/currency">
+                <Annotation Term="Common.Label" String="{i18n>Currency}"/>
+                    <Annotation Term="Core.Description" String="{i18n>CurrencyCode.Description}"/>
+                    </Annotations>
+                    <Annotations Target="VehicleManagement.KilometerExpenses/currency_code">
+                        <Annotation Term="Common.Label" String="{i18n>Currency}"/>
+                            <Annotation Term="Common.ValueList">
+                                <Record Type="Common.ValueListType">
+                                    <PropertyValue Property="Label" String="{i18n>Currency}"/>
+                                        <PropertyValue Property="CollectionPath" String="Currencies"/>
+                                        <PropertyValue Property="Parameters">
+                                            <Collection>
+                                                <Record Type="Common.ValueListParameterInOut">
+                                                    <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                                                    <PropertyValue Property="ValueListProperty" String="code"/>
+                                                </Record>
+                                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                                </Record>
+                                            </Collection>
+                                        </PropertyValue>
+                                    </Record>
+                                </Annotation>
+                                <Annotation Term="Core.Description" String="{i18n>CurrencyCode.Description}"/>
+                                </Annotations>
+                                <Annotations Target="VehicleManagement.KilometerExpenses/status">
+                                    <Annotation Term="Validation.AllowedValues">
+                                        <Collection>
+                                            <Record Type="Validation.AllowedValue">
+                                                <Annotation Term="Core.SymbolicName" String="A"/>
+                                                <PropertyValue Property="Value" String="Onaylandı"/>
+                                            </Record>
+                                            <Record Type="Validation.AllowedValue">
+                                                <Annotation Term="Core.SymbolicName" String="W"/>
+                                                <PropertyValue Property="Value" String="Beklemede"/>
+                                            </Record>
+                                            <Record Type="Validation.AllowedValue">
+                                                <Annotation Term="Core.SymbolicName" String="R"/>
+                                                <PropertyValue Property="Value" String="Reddedildi"/>
+                                            </Record>
+                                        </Collection>
+                                    </Annotation>
+                                </Annotations>
+                                <Annotations Target="VehicleManagement.Currencies">
+                                    <Annotation Term="UI.Identification">
+                                        <Collection>
+                                            <Record Type="UI.DataField">
+                                                <PropertyValue Property="Value" Path="name"/>
+                                            </Record>
+                                        </Collection>
+                                    </Annotation>
+                                </Annotations>
+                                <Annotations Target="VehicleManagement.Currencies/name">
+                                    <Annotation Term="Common.Label" String="{i18n>Name}"/>
+                                    </Annotations>
+                                    <Annotations Target="VehicleManagement.Currencies/descr">
+                                        <Annotation Term="Common.Label" String="{i18n>Description}"/>
+                                        </Annotations>
+                                        <Annotations Target="VehicleManagement.Currencies/code">
+                                            <Annotation Term="Common.Text" Path="name"/>
+                                            <Annotation Term="Common.Label" String="{i18n>CurrencyCode}"/>
+                                            </Annotations>
+                                            <Annotations Target="VehicleManagement.Currencies/symbol">
+                                                <Annotation Term="Common.Label" String="{i18n>CurrencySymbol}"/>
+                                                </Annotations>
+                                                <Annotations Target="VehicleManagement.Currencies_texts/name">
+                                                    <Annotation Term="Common.Label" String="{i18n>Name}"/>
+                                                    </Annotations>
+                                                    <Annotations Target="VehicleManagement.Currencies_texts/descr">
+                                                        <Annotation Term="Common.Label" String="{i18n>Description}"/>
+                                                        </Annotations>
+                                                        <Annotations Target="VehicleManagement.Currencies_texts/code">
+                                                            <Annotation Term="Common.Text" Path="name"/>
+                                                            <Annotation Term="Common.Label" String="{i18n>CurrencyCode}"/>
+                                                            </Annotations>
+                                                        </Schema>
+                                                    </edmx:DataServices>
+                                                </edmx:Edmx>

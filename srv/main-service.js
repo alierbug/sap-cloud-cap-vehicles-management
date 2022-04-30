@@ -2,6 +2,8 @@ const cds = require('@sap/cds');
 
 class VehicleManagement extends cds.ApplicationService {
     async init() {
+        const db = await cds.connect.to("db");
+        const { Personnels } = db.entities("ndbs.db.vehicle");
         let oI18nFolder = {
             _i18nfolders: [__dirname + "/i18n"]
         };
