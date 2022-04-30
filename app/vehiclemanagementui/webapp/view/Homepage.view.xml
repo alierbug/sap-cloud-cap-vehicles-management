@@ -3,34 +3,113 @@
     displayBlock="true"
     xmlns="sap.m"
     xmlns:layout="sap.ui.layout"
-    xmlns:uxap="sap.uxap">
-    <Page id="homepage"
-        showHeader="false"
-        busy="{generalJsonModel>/busy}">
-        <content>
-            <uxap:ObjectPageHeaderContent id="ophcExpensesHeader">
-                <uxap:content>
-                    <layout:VerticalLayout>
-                        <Text text="{i18n>licencePlate}"/>
-                        <ObjectIdentifier title="{toVehicles/licencePlate}" />
-                    </layout:VerticalLayout>
-                    <layout:VerticalLayout>
-                        <Text text="{i18n>totalTrip}"/>
-                        <ObjectNumber number="{generalJsonModel>/totalTrip}"
-                            unit="{generalJsonModel>/distanceUnit}"/>
-                    </layout:VerticalLayout>
-                    <layout:VerticalLayout>
-                        <Text text="{i18n>totalAmount}"/>
-                        <ObjectNumber number="{generalJsonModel>/totalAmount}"
-                            unit="{generalJsonModel>/currency}"/>
-                    </layout:VerticalLayout>
-                    <layout:VerticalLayout>
-                        <Text text="{i18n>status}"/>
-                        <ObjectStatus text="{generalJsonModel>/expenseStatusText}"
-                            state="{generalJsonModel>/expenseStatus}"/>
-                    </layout:VerticalLayout>
-                </uxap:content>
-            </uxap:ObjectPageHeaderContent>
-        </content>
-    </Page>
+    xmlns:uxap="sap.uxap"
+    xmlns:core="sap.ui.core">
+    <Shell >
+        <app>
+            <Page id="homepage"
+                showHeader="false"
+                busy="{generalJsonModel>/busy}">
+                <content>
+                    <uxap:ObjectPageHeaderContent id="ophcExpensesHeader">
+                        <uxap:content>
+                            <layout:VerticalLayout>
+                                <Text text="{i18n>licencePlate}"/>
+                                <ObjectIdentifier title="{toVehicles/licencePlate}" />
+                            </layout:VerticalLayout>
+                            <layout:VerticalLayout>
+                                <Text text="{i18n>totalTrip}"/>
+                                <ObjectNumber class="sapUiTinyMarginTop"
+                                    number="{path:'generalJsonModel>/totalTrip', type: 'sap.ui.model.type.Float'}"
+                                    unit="{generalJsonModel>/distanceUnit}"/>
+                            </layout:VerticalLayout>
+                            <layout:VerticalLayout>
+                                <Text text="{i18n>totalAmount}"/>
+                                <ObjectNumber class="sapUiTinyMarginTop"
+                                    number="{
+                              parts:[{path:'generalJsonModel>/totalAmount'},{path:'generalJsonModel>/currency_code'}],
+						      type: 'sap.ui.model.type.Currency',
+						      formatOptions: {showMeasure: false}
+                            }"
+                                    unit="{generalJsonModel>/currency_code}"/>
+                            </layout:VerticalLayout>
+                            <layout:VerticalLayout>
+                                <Text text="{i18n>status}"/>
+                                <ObjectStatus text="{generalJsonModel>/expenseStatusText}"
+                                    state="{generalJsonModel>/expenseStatus}"/>
+                            </layout:VerticalLayout>
+                        </uxap:content>
+                    </uxap:ObjectPageHeaderContent>
+                    <Table id="tblExpenses"
+                        mode="MultiSelect">
+                        <headerToolbar>
+                            <OverflowToolbar>
+                                <content>
+                                    <Title text="{i18n>expenses}"
+                                        level="H2"/>
+                                    <ToolbarSpacer/>
+                                    <DatePicker id="dpPeriod"
+                                        displayFormat="MM/yyyy"/>
+                                </content>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column>
+                                <Text text="{i18n>date}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>expenseType}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>fromLocation}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>destination}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>isOutofTown}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>distance}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>unit}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>amount}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>status}"/>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem id="cliExpenses">
+                                <cells>
+                                    <DatePicker dateValue="{date}"
+                                        displayFormat="dd.MM.yyyy"/>
+                                    <ComboBox selectedKey="{expenseType}">
+                                        <items>
+                                            <core:Item key="G"
+                                                text="{i18n>departure}"/>
+                                            <core:Item key="R"
+                                                text="{i18n>returning}"/>
+                                        </items>
+                                    </ComboBox>
+                                    <Input value="{fromLocation}"/>
+                                    <Input value="{destination}"/>
+                                    <CheckBox selected="{isOutofTown}"/>
+                                    <Input value="{distance}"/>
+                                    <Text text="{distanceUnit}"/>
+                                    <ObjectNumber number="{amount}"
+                                        unit="{currency_code}"/>
+                                    <ObjectStatus state="{= ${status} === 'A' ? 'Success': 'Error'}"
+                                        icon="{= ${status} === 'A' ? 'sap-icon://sys-enter-2': 'sap-icon://error'}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </Page>
+        </app>
+    </Shell>
 </mvc:View>

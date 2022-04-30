@@ -9,8 +9,8 @@ entity KilometerExpenses {
         date         : Date;
         @assert.range : true
         expenseType  : String(10) enum {
-            G  = 'Gidiş';
-            R  = 'Dönüş';
+            G;
+            R;
         };
         fromLocation : String(50);
         destination  : String(50);
@@ -18,17 +18,17 @@ entity KilometerExpenses {
         distance     : Decimal(15, 2);
         @assert.range : true
         distanceUnit : String(20) enum {
-            KM = 'Kilometre';
-            M  = 'Metre';
+            KM;
+            M;
         };
         amount       : Decimal(15, 2);
         currency     : Currency;
         period       : String(7);
         @assert.range : true
         status       : String(30) enum {
-            A  = 'Onaylandı';
-            W  = 'Beklemede';
-            R  = 'Reddedildi';
+            A;
+            W;
+            R;
         };
         toPersonnels : Association to Personnels
                            on toPersonnels.personnelNo = $self.personnelNo;
