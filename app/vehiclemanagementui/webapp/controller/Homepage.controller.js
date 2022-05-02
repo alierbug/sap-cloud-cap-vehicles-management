@@ -2,15 +2,17 @@ sap.ui.define([
     "ndbs/ui/vehiclemanagementui/controller/BaseController",
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
+    "sap/ui/model/FilterOperator",
+    "ndbs/ui/vehiclemanagementui/model/formatter"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (BaseController, JSONModel, Filter, FilterOperator) {
+    function (BaseController, JSONModel, Filter, FilterOperator, formatter) {
         "use strict";
 
         return BaseController.extend("ndbs.ui.vehiclemanagementui.controller.Homepage", {
+            formatter: formatter,
 
             /* =========================================================== */
             /* lifecycle methods                                           */
@@ -18,7 +20,7 @@ sap.ui.define([
 
             onInit: function () {
                 this.getOwnerComponent().getModel("generalJsonModel").setProperty("/busy", true);
-                this.getView().byId("dpPeriod").setDateValue(new Date());
+                // this.getView().byId("dpPeriod").setDateValue(new Date());
             },
             onAfterRendering: function () {
                 this._getUserVehicleData();
@@ -30,8 +32,10 @@ sap.ui.define([
 
             _getUserVehicleData: async function () {
                 await this._getUserInfo();
-                await this._getPersonnelInfo();
-                this._getExpenses();
+                let bFetchData = await this._getPersonnelInfo();
+                if (bFetchData) {
+                    this._getExpenses();
+                }
             },
             _getUserInfo: function () {
                 let sAppId = this.getOwnerComponent().getManifestEntry("/sap.app/id"),
@@ -74,19 +78,22 @@ sap.ui.define([
                                 let oData = oEvent.getSource().getBoundContext().getObject(),
                                     sStatusText = "",
                                     sStatus = "",
-                                    sPeriod = "04/2022";
+                                    sPeriod = this._getCurrentPeriod(),
+                                    sFormattedPeriod = `${sPeriod.substring(5, 7)}/${sPeriod.substring(0, 4)}`,
+                                    bFetchData = false;
 
                                 if (oData.toVehicles) {
                                     sStatusText = oResourceBundle.getText("updatable");
                                     sStatus = "Success";
+                                    bFetchData = true;
                                 } else {
-                                    sStatusText = oResourceBundle.getText("noVehicle", [oData.personnelNo, sPeriod]);
+                                    sStatusText = oResourceBundle.getText("noVehicle", [oData.personnelNo, sFormattedPeriod]);
                                     sStatus = "Error";
                                 }
                                 oGeneralModel.setProperty("/expenseStatusText", sStatusText);
                                 oGeneralModel.setProperty("/expenseStatus", sStatus);
                                 oGeneralModel.setProperty("/busy", false);
-                                fnResolve();
+                                fnResolve(bFetchData);
                             }
                         }
                     });
@@ -100,7 +107,8 @@ sap.ui.define([
                         filters: [
                             new Filter("personnelNo", FilterOperator.EQ, sPersonnelNo),
                             new Filter("period", FilterOperator.EQ, sPeriod)
-                        ]
+                        ],
+                        and: true
                     }),
                     oTemplate = oView.byId("cliExpenses"),
                     oGeneralModel = this.getView().getModel("generalJsonModel");
@@ -139,6 +147,34 @@ sap.ui.define([
                     sPeriod = `${sYear}-${sMonth}`;
 
                 return sPeriod;
+            },
+            _getCurrentDate: function () {
+                let oDate = new Date(),
+                    sDay = oDate.getDate().toString().length < 2 ? `0${oDate.getDate().toString()}` : oDate.getDate().toString(),
+                    sMonth = (oDate.getMonth() + 1).toString().length < 2 ? `0${oDate.getMonth() + 1}` : `${oDate.getMonth() + 1}`,
+                    sYear = oDate.getFullYear().toString();
+
+                return `${sYear}-${sMonth}-${sDay}`;
+            },
+
+            /* =========================================================== */
+            /* event handlers                                              */
+            /* =========================================================== */
+
+            onAddNewRow: function () {
+                this.getView().byId("tblExpenses").getBinding("items").create({
+                    date: this._getCurrentDate(),
+                    distanceUnit: "KM",
+                    amount: 0,
+                    currency_code: "TRY",
+                    status: "W"
+                });
+            },
+            onChangeDistance: function (oEvent) {
+                let sNewValue = oEvent.getParameter("newValue"),
+                    oContext = oEvent.getSource().getBindingContext();
+
+                oContext.setProperty("/amount", parseFloat(sNewValue.replace(",", ".")));
             }
         });
     });
