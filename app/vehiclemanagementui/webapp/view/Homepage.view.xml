@@ -55,7 +55,8 @@
                                     <Button text="{i18n>duplicate}"
                                         press="onDuplicateRows"/>
                                     <DatePicker id="dpPeriod"
-                                        displayFormat="MM/yyyy">
+                                        displayFormat="MM/yyyy"
+                                        change="onChangePeriod">
                                         <layoutData>
                                             <OverflowToolbarLayoutData priority="NeverOverflow"
                                                 maxWidth="8rem"/>
@@ -99,36 +100,16 @@
                                 <Text text="{i18n>status}"/>
                             </Column>
                         </columns>
-                        <items>
-                            <ColumnListItem id="cliExpenses">
-                                <cells>
-                                    <DatePicker dateValue="{date}"
-                                        displayFormat="dd.MM.yyyy"/>
-                                    <ComboBox selectedKey="{expenseType}">
-                                        <items>
-                                            <core:Item key="G"
-                                                text="{i18n>departure}"/>
-                                            <core:Item key="R"
-                                                text="{i18n>returning}"/>
-                                        </items>
-                                    </ComboBox>
-                                    <Input value="{fromLocation}"/>
-                                    <Input value="{destination}"/>
-                                    <CheckBox selected="{isOutofTown}"/>
-                                    <Input value="{distance}" liveChange="onChangeDistance"/>
-                                    <Text text="{distanceUnit}"/>
-                                    <ObjectNumber number="{amount}"
-                                        unit="{currency_code}"/>
-                                    <ObjectStatus state="{path: 'status', formatter:'.formatter.formatExpenseStatusState'}"
-                                        icon="{path: 'status', formatter:'.formatter.formatExpenseStatusIcon'}"/>
-                                </cells>
-                            </ColumnListItem>
-                        </items>
                     </Table>
                 </content>
                 <footer>
                     <OverflowToolbar>
                         <content>
+                            <Button icon="sap-icon://alert"
+                                text="{= ${message>/}.length }"
+                                visible="{= ${message>/}.length > 0 }"
+                                type="Emphasized"
+                                press="onMessagePopoverPress" />
                             <ToolbarSpacer/>
                             <Button text="{i18n>save}"
                                 type="Accept"

@@ -9,10 +9,17 @@ class VehicleManagement extends cds.ApplicationService {
         };
 
         this.after("READ", "KilometerExpenses", async (oData, req) => {
-            oData.forEach((item) => {
-                let sExpenseTypeKey = item.expenseType == "G" ? "departure" : "returning";
-                item.expenseType = cds.localize(oI18nFolder, req.user.locale, `{i18n>${sExpenseTypeKey}}`);
-            });
+            // let sExpenseTypeKey = "";
+            // if (Array.isArray(oData)) {
+            //     oData.forEach((item) => {
+            //         sExpenseTypeKey = item.expenseType == "G" ? "departure" : "returning";
+            //         item.expenseType = cds.localize(oI18nFolder, req.user.locale, `{i18n>${sExpenseTypeKey}}`);
+            //     });
+            // }
+            // else{
+            //     sExpenseTypeKey = oData.expenseType == "G" ? "departure" : "returning";
+            //     oData
+            // }
         });
 
         await super.init();
