@@ -5,7 +5,7 @@
     xmlns:layout="sap.ui.layout"
     xmlns:uxap="sap.uxap"
     xmlns:core="sap.ui.core">
-    <Shell >
+    <Shell appWidthLimited="false">
         <app>
             <Page id="homepage"
                 showHeader="false"
