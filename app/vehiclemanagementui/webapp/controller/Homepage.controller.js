@@ -9,6 +9,7 @@ sap.ui.define([
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
     function (BaseController, JSONModel, Filter, FilterOperator, formatter) {
+        let sUpdateGroupId = "batchRequest";
         "use strict";
 
         return BaseController.extend("ndbs.ui.vehiclemanagementui.controller.Homepage", {
@@ -19,8 +20,13 @@ sap.ui.define([
             /* =========================================================== */
 
             onInit: function () {
+                let oView = this.getView(),
+                    oMessageManager = sap.ui.getCore().getMessageManager();
+
                 this.getOwnerComponent().getModel("generalJsonModel").setProperty("/busy", true);
-                // this.getView().byId("dpPeriod").setDateValue(new Date());
+                oView.byId("dpPeriod").setDateValue(new Date());
+                oView.setModel(oMessageManager.getMessageModel(), "message");
+                oMessageManager.registerObject(oView, true);
             },
             onAfterRendering: function () {
                 this._getUserVehicleData();
@@ -64,7 +70,8 @@ sap.ui.define([
             _getPersonnelInfo: function () {
                 let sUserEmail = this.getView().getModel("userInfo").getProperty("/email"),
                     oGeneralModel = this.getView().getModel("generalJsonModel"),
-                    oResourceBundle = this.getResourceBundle();
+                    oResourceBundle = this.getResourceBundle(),
+                    oPeriod = this.getView().byId("dpPeriod");
 
                 return new Promise((fnResolve, fnReject) => {
                     this.getView().byId("ophcExpensesHeader").bindElement({
@@ -78,9 +85,11 @@ sap.ui.define([
                                 let oData = oEvent.getSource().getBoundContext().getObject(),
                                     sStatusText = "",
                                     sStatus = "",
-                                    sPeriod = this._getCurrentPeriod(),
+                                    sPeriod = this._getCurrentPeriod(oPeriod.getDateValue()),
                                     sFormattedPeriod = `${sPeriod.substring(5, 7)}/${sPeriod.substring(0, 4)}`,
                                     bFetchData = false;
+
+                                this._iPersonnelNo = oData.personnelNo;
 
                                 if (oData.toVehicles) {
                                     sStatusText = oResourceBundle.getText("updatable");
@@ -102,7 +111,7 @@ sap.ui.define([
             _getExpenses: function () {
                 let oView = this.getView(),
                     sPersonnelNo = oView.byId("ophcExpensesHeader").getBindingContext().getProperty("personnelNo"),
-                    sPeriod = this._getCurrentPeriod(),
+                    sPeriod = this._getCurrentPeriod(oView.byId("dpPeriod").getDateValue()),
                     oFilter = new Filter({
                         filters: [
                             new Filter("personnelNo", FilterOperator.EQ, sPersonnelNo),
@@ -110,7 +119,7 @@ sap.ui.define([
                         ],
                         and: true
                     }),
-                    oTemplate = oView.byId("cliExpenses"),
+                    oTemplate = this.getTableTemplate(this),
                     oGeneralModel = this.getView().getModel("generalJsonModel");
 
                 oView.byId("tblExpenses").bindItems({
@@ -119,7 +128,8 @@ sap.ui.define([
                     templateShareable: true,
                     filters: oFilter,
                     parameters: {
-                        "$select": "*"
+                        "$select": "*",
+                        "$$updateGroupId": sUpdateGroupId
                     },
                     events: {
                         dataReceived: (oEvent) => {
@@ -140,9 +150,8 @@ sap.ui.define([
                     }
                 });
             },
-            _getCurrentPeriod: function () {
-                let oDate = new Date(),
-                    sMonth = (oDate.getMonth() + 1).toString().length < 2 ? `0${oDate.getMonth() + 1}` : `${oDate.getMonth() + 1}`,
+            _getCurrentPeriod: function (oDate = new Date()) {
+                let sMonth = (oDate.getMonth() + 1).toString().length < 2 ? `0${oDate.getMonth() + 1}` : `${oDate.getMonth() + 1}`,
                     sYear = oDate.getFullYear().toString(),
                     sPeriod = `${sYear}-${sMonth}`;
 
@@ -156,6 +165,21 @@ sap.ui.define([
 
                 return `${sYear}-${sMonth}-${sDay}`;
             },
+            _getMessagePopover: function () {
+                var oView = this.getView();
+
+                if (!this._pMessagePopover) {
+                    this._pMessagePopover = sap.ui.core.Fragment.load({
+                        id: oView.getId(),
+                        name: "ndbs.ui.vehiclemanagementui.fragments.MessagePopover",
+                        controller: this
+                    }).then(function (oMessagePopover) {
+                        oView.addDependent(oMessagePopover);
+                        return oMessagePopover;
+                    });
+                }
+                return this._pMessagePopover;
+            },
 
             /* =========================================================== */
             /* event handlers                                              */
@@ -163,18 +187,62 @@ sap.ui.define([
 
             onAddNewRow: function () {
                 this.getView().byId("tblExpenses").getBinding("items").create({
+                    personnelNo: this._iPersonnelNo,
                     date: this._getCurrentDate(),
+                    distance: 0,
                     distanceUnit: "KM",
                     amount: 0,
                     currency_code: "TRY",
+                    period: this._getCurrentPeriod(this.getView().byId("dpPeriod").getDateValue()),
                     status: "W"
                 });
             },
             onChangeDistance: function (oEvent) {
                 let sNewValue = oEvent.getParameter("newValue"),
-                    oContext = oEvent.getSource().getBindingContext();
+                    oAmountItem = oEvent.getSource().getParent().getCells()[7],
+                    fAmount = sNewValue ? parseFloat(sNewValue.replaceAll(",", ".")) : 0;
 
-                oContext.setProperty("/amount", parseFloat(sNewValue.replace(",", ".")));
+                oAmountItem.setNumber(fAmount);
+                // oContext.setProperty("/amount", sAmount, "batchRequest");
+            },
+            onSaveExpenses: function () {
+                let oDataModel = this.getView().getModel(),
+                    bPendingChanges = oDataModel.hasPendingChanges(),
+                    oGeneralModel = this.getView().getModel("generalJsonModel");
+
+                oGeneralModel.setProperty("/busy", true);
+                if (bPendingChanges) {
+                    oDataModel.submitBatch(sUpdateGroupId).then(() => {
+                        oGeneralModel.setProperty("/busy", false);
+                    }).catch((oError) => {
+                        var test = "x";
+                    }).finally((oeee) => {
+                        var test = "x";
+                    });
+                }
+            },
+            onMessagePopoverPress: function (oEvent) {
+                let oSourceControl = oEvent.getSource();
+
+                this._getMessagePopover().then(function (oMessagePopover) {
+                    oMessagePopover.openBy(oSourceControl);
+                });
+            },
+            onChangePeriod: function (oEvent) {
+                this._getExpenses();
+            },
+            onDuplicateRows: function () {
+                let oExpenseTable = this.getView().byId("tblExpenses"),
+                    aSelectedContexts = oExpenseTable.getSelectedContexts();
+
+                aSelectedContexts.forEach((context) => {
+                    let oDuplicatedRow = context.getObject();
+                    delete oDuplicatedRow.expenseID;
+                    oDuplicatedRow.status = "W";
+                    oDuplicatedRow.period = this._getCurrentPeriod(this.getView().byId("dpPeriod").getDateValue());
+
+                    oExpenseTable.getBinding("items").create(oDuplicatedRow);
+                });
             }
         });
     });
