@@ -1,5 +1,5 @@
-vehicleID;serialNo;brand;model;age;licencePlate
-4444;952334;Mercedes;AMG S63;0;26-DN-606
-5555;652335;BMW;5.20;3;34-EA-234
-2222;352337;Audi;A6;2;34-FG-732
-1111;152338;Volkswagen;Polo;0;34-PK-372      
+vehicleID;serialNo;brand;model;age;licencePlate;fuelFactor
+4444;952334;Mercedes;AMG S63;0;26-DN-606;1.5
+5555;652335;BMW;5.20;3;34-EA-234;1
+2222;352337;Audi;A6;2;34-FG-732;1
+1111;152338;Volkswagen;Polo;0;34-PK-372;1      

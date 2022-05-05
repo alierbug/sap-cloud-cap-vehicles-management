@@ -52,6 +52,8 @@
                                     <ToolbarSpacer/>
                                     <Button icon="sap-icon://add"
                                         press="onAddNewRow"/>
+                                    <Button icon="sap-icon://delete"
+                                        press="onDeleteRow"/>
                                     <Button text="{i18n>duplicate}"
                                         press="onDuplicateRows"/>
                                     <DatePicker id="dpPeriod"
@@ -70,9 +72,14 @@
                                 <Text text="{i18n>date}"/>
                             </Column>
                             <Column>
+                                <Text text="{i18n>project}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
                                 <Text text="{i18n>expenseType}"/>
                             </Column>
-                            <Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
                                 <Text text="{i18n>fromLocation}"/>
                             </Column>
                             <Column demandPopin="true"

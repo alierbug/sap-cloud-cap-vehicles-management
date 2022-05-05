@@ -51,6 +51,7 @@ annotate v.Vehicles with {
     brand        @Common.Label : '{i18n>brand}';
     model        @Common.Label : '{i18n>model}';
     age          @Common.Label : '{i18n>age}';
+    fuelFactor   @Common.Label : '{i18n>fuelFactor}';
 };
 
 annotate v.PersonnelsofProjects with {

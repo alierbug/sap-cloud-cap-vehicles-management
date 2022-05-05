@@ -71,6 +71,25 @@ sap.ui.define([
                         displayFormat: "dd.MM.yyyy",
                         editable: "{= ${path:'status',targetType:'any'} === 'W' ? true : false}"
                     }),
+                    new sap.m.Input({
+                        // value: "{projectID}",
+                        textFormatMode: "Value",
+                        selectedKey: "{projectID}",
+                        editable: "{= ${path:'status',targetType:'any'} === 'W' ? true : false}",
+                        valueHelpRequest: oThis.onProjectValueHelpRequest.bind(oThis),
+                        showValueHelp: true,
+                        showSuggestion: true,
+                        maxSuggestionWidth: "15rem",
+                        suggestionItems: {
+                            path: "/Projects",
+                            template: new sap.ui.core.ListItem({
+                                key: "{projectID}",
+                                text: "{projectName}",
+                                additionalText: "{projectID}"
+                            }),
+                            templateShareable: true
+                        }
+                    }),
                     new sap.m.ComboBox({
                         selectedKey: "{expenseType}",
                         editable: "{= ${path:'status',targetType:'any'} === 'W' ? true : false}",
@@ -99,7 +118,7 @@ sap.ui.define([
                     }),
                     new sap.m.Input({
                         value: "{path:'distance',type:'sap.ui.model.type.Float', formatOptions:{minFractionDigits:'2',maxFractionDigits:'2'}}",
-                        liveChange: oThis.onChangeDistance,
+                        liveChange: oThis.onChangeDistance.bind(oThis),
                         editable: "{= ${path:'status',targetType:'any'} === 'W' ? true : false}"
                     }),
                     new sap.m.Text({

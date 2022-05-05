@@ -4,32 +4,32 @@ using {Currency} from '@sap/cds/common';
 
 entity KilometerExpenses {
     key expenseID    : UUID;
-        personnelNo  : Personnels:personnelNo;
+        personnelNo  : Personnels:personnelNo not null;
         projectID    : Projects:projectID;
-        date         : Date;
+        date         : Date not null;
         @assert.range : true
         expenseType  : String(10) enum {
             G;
             R;
-        };
-        fromLocation : String(50);
-        destination  : String(50);
+        } not null;
+        fromLocation : String(50) not null;
+        destination  : String(50) not null;
         isOutofTown  : Boolean;
-        distance     : Decimal(15, 2);
+        distance     : Decimal(15, 2) not null;
         @assert.range : true
         distanceUnit : String(20) enum {
             KM;
             M;
-        };
-        amount       : Decimal(15, 2);
-        currency     : Currency;
-        period       : String(7);
+        } not null;
+        amount       : Decimal(15, 2) not null;
+        currency     : Currency not null;
+        period       : String(7) not null;
         @assert.range : true
         status       : String(30) enum {
             A;
             W;
             R;
-        };
+        } not null;
         toPersonnels : Association to Personnels
                            on toPersonnels.personnelNo = $self.personnelNo;
         toProjects   : Association to Projects
@@ -82,6 +82,7 @@ entity Vehicles {
         brand        : String(50);
         model        : type of brand;
         age          : Integer;
+        fuelFactor   : Decimal(5, 2);
 };
 
 entity PersonnelsofProjects {

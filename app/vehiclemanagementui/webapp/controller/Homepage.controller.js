@@ -3,12 +3,14 @@ sap.ui.define([
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "ndbs/ui/vehiclemanagementui/model/formatter"
+    "ndbs/ui/vehiclemanagementui/model/formatter",
+    "sap/m/MessageToast",
+    "sap/ui/model/Sorter"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (BaseController, JSONModel, Filter, FilterOperator, formatter) {
+    function (BaseController, JSONModel, Filter, FilterOperator, formatter, MessageToast, Sorter) {
         let sUpdateGroupId = "batchRequest";
         "use strict";
 
@@ -78,7 +80,7 @@ sap.ui.define([
                         path: `/PersonnelInformation('${sUserEmail}')`,
                         parameters: {
                             "$select": "*",
-                            "$expand": "toVehicles"
+                            "$expand": "toVehicles($select=*),toProjects"
                         },
                         events: {
                             dataReceived: (oEvent) => {
@@ -120,13 +122,19 @@ sap.ui.define([
                         and: true
                     }),
                     oTemplate = this.getTableTemplate(this),
-                    oGeneralModel = this.getView().getModel("generalJsonModel");
+                    oGeneralModel = this.getView().getModel("generalJsonModel"),
+                    oSorter = new Sorter({
+                        path: "date",
+                        descending: true,
+                        group: false
+                    });
 
                 oView.byId("tblExpenses").bindItems({
                     path: "/KilometerExpenses",
                     template: oTemplate,
                     templateShareable: true,
                     filters: oFilter,
+                    sorters: oSorter,
                     parameters: {
                         "$select": "*",
                         "$$updateGroupId": sUpdateGroupId
@@ -138,8 +146,10 @@ sap.ui.define([
                                 fTotalAmount = 0;
 
                             aContext.forEach((expense) => {
-                                fTotalTrip += Number(expense.getObject().distance);
-                                fTotalAmount += Number(expense.getObject().amount)
+                                if (expense) {
+                                    fTotalTrip += Number(expense.getObject().distance);
+                                    fTotalAmount += Number(expense.getObject().amount)
+                                }
                             });
 
                             oGeneralModel.setProperty("/totalAmount", fTotalAmount);
@@ -166,7 +176,7 @@ sap.ui.define([
                 return `${sYear}-${sMonth}-${sDay}`;
             },
             _getMessagePopover: function () {
-                var oView = this.getView();
+                let oView = this.getView();
 
                 if (!this._pMessagePopover) {
                     this._pMessagePopover = sap.ui.core.Fragment.load({
@@ -179,6 +189,13 @@ sap.ui.define([
                     });
                 }
                 return this._pMessagePopover;
+            },
+            _deleteExpenses: function (oContext) {
+                return new Promise((fnResolve) => {
+                    oContext.delete("$direct").then(() => {
+                        fnResolve();
+                    });
+                });
             },
 
             /* =========================================================== */
@@ -199,11 +216,14 @@ sap.ui.define([
             },
             onChangeDistance: function (oEvent) {
                 let sNewValue = oEvent.getParameter("newValue"),
-                    oAmountItem = oEvent.getSource().getParent().getCells()[7],
-                    fAmount = sNewValue ? parseFloat(sNewValue.replaceAll(",", ".")) : 0;
+                    fFuelFactor = this.getView().byId("ophcExpensesHeader").getBindingContext().getProperty("toVehicles/fuelFactor"),
+                    fAmount = sNewValue ? parseFloat(sNewValue.replaceAll(",", ".")) : 0,
+                    oContext = oEvent.getSource().getBindingContext(),
+                    sPath = oContext.getPath();
 
-                oAmountItem.setNumber(fAmount);
-                // oContext.setProperty("/amount", sAmount, "batchRequest");
+                //Yakıt çarpanıyla mesafeyi çarp
+                fAmount *= fFuelFactor;
+                oContext.setProperty(`${sPath}/amount`, fAmount);
             },
             onSaveExpenses: function () {
                 let oDataModel = this.getView().getModel(),
@@ -214,10 +234,9 @@ sap.ui.define([
                 if (bPendingChanges) {
                     oDataModel.submitBatch(sUpdateGroupId).then(() => {
                         oGeneralModel.setProperty("/busy", false);
-                    }).catch((oError) => {
-                        var test = "x";
-                    }).finally((oeee) => {
-                        var test = "x";
+                        if (!this.getView().getModel().hasPendingChanges()) {
+                            MessageToast.show(this.getResourceBundle().getText("savedSuccessfully"));
+                        }
                     });
                 }
             },
@@ -229,11 +248,19 @@ sap.ui.define([
                 });
             },
             onChangePeriod: function (oEvent) {
+                if (this.getView().getModel().hasPendingChanges()) {
+                    this.getView().getModel().resetChanges(sUpdateGroupId);
+                }
                 this._getExpenses();
             },
             onDuplicateRows: function () {
                 let oExpenseTable = this.getView().byId("tblExpenses"),
                     aSelectedContexts = oExpenseTable.getSelectedContexts();
+
+                if (!aSelectedContexts.length) {
+                    MessageToast.show(this.getResourceBundle().getText("atLeastOneRow"));
+                    return;
+                }
 
                 aSelectedContexts.forEach((context) => {
                     let oDuplicatedRow = context.getObject();
@@ -243,6 +270,51 @@ sap.ui.define([
 
                     oExpenseTable.getBinding("items").create(oDuplicatedRow);
                 });
+            },
+            onDeleteRow: function () {
+                let oExpenseTable = this.getView().byId("tblExpenses"),
+                    aSelectedContexts = oExpenseTable.getSelectedContexts(),
+                    aDeletedContexts = [];
+
+                if (!aSelectedContexts.length) {
+                    MessageToast.show(this.getResourceBundle().getText("atLeastOneRow"));
+                    return;
+                }
+
+                aSelectedContexts.forEach((context) => {
+                    aDeletedContexts.push(this._deleteExpenses(context));
+                });
+
+                Promise.all(aDeletedContexts).then(() => {
+                    oExpenseTable.getBinding("items").refresh();
+                });
+            },
+            onProjectValueHelpRequest: function (oEvent) {
+                this._oProjectInput = oEvent.getSource();
+
+                if (!this._oProjectValueHelp) {
+                    this._oProjectValueHelp = sap.ui.core.Fragment.load({
+                        id: this.getView().getId(),
+                        name: "ndbs.ui.vehiclemanagementui.fragments.ValueHelp",
+                        controller: this
+                    }).then(function (oDialog) {
+                        this.getView().addDependent(oDialog);
+                        return oDialog;
+                    }.bind(this));
+                }
+                this._oProjectValueHelp.then(function (oDialog) {
+                    oDialog.open();
+                });
+            },
+            onValueProjectSearch: function (oEvent) {
+                let sValue = oEvent.getParameter("value"),
+                    oFilter = new Filter("projectName", FilterOperator.Contains, sValue);
+
+                oEvent.getSource().getBinding("items").filter(oFilter);
+            },
+            onValueProjectConfirm: function (oEvent) {
+                let iSelectedProject = + oEvent.getParameter("selectedItem").getDescription();
+                this._oProjectInput.setSelectedKey(iSelectedProject);
             }
         });
     });
