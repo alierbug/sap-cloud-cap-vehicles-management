@@ -89,7 +89,8 @@ sap.ui.define([
                                     sStatus = "",
                                     sPeriod = this._getCurrentPeriod(oPeriod.getDateValue()),
                                     sFormattedPeriod = `${sPeriod.substring(5, 7)}/${sPeriod.substring(0, 4)}`,
-                                    bFetchData = false;
+                                    bFetchData = false,
+                                    bButtonEnabled = true;
 
                                 this._iPersonnelNo = oData.personnelNo;
 
@@ -100,10 +101,12 @@ sap.ui.define([
                                 } else {
                                     sStatusText = oResourceBundle.getText("noVehicle", [oData.personnelNo, sFormattedPeriod]);
                                     sStatus = "Error";
+                                    bButtonEnabled = false;
                                 }
                                 oGeneralModel.setProperty("/expenseStatusText", sStatusText);
                                 oGeneralModel.setProperty("/expenseStatus", sStatus);
                                 oGeneralModel.setProperty("/busy", false);
+                                oGeneralModel.setProperty("/buttonEnabled", bButtonEnabled);
                                 fnResolve(bFetchData);
                             }
                         }
@@ -152,9 +155,9 @@ sap.ui.define([
                                 }
                             });
 
-                            oGeneralModel.setProperty("/totalAmount", fTotalAmount);
+                            oGeneralModel.setProperty("/totalAmount", fTotalAmount.toFixed(2));
                             oGeneralModel.setProperty("/currency_code", "TRY");
-                            oGeneralModel.setProperty("/totalTrip", fTotalTrip);
+                            oGeneralModel.setProperty("/totalTrip", fTotalTrip.toFixed(2));
                             oGeneralModel.setProperty("/distanceUnit", "KM");
                         }
                     }
@@ -223,6 +226,7 @@ sap.ui.define([
 
                 //Yakıt çarpanıyla mesafeyi çarp
                 fAmount *= fFuelFactor;
+                fAmount = fAmount.toFixed(2);
                 oContext.setProperty(`${sPath}/amount`, fAmount);
             },
             onSaveExpenses: function () {
@@ -230,8 +234,8 @@ sap.ui.define([
                     bPendingChanges = oDataModel.hasPendingChanges(),
                     oGeneralModel = this.getView().getModel("generalJsonModel");
 
-                oGeneralModel.setProperty("/busy", true);
                 if (bPendingChanges) {
+                    oGeneralModel.setProperty("/busy", true);
                     oDataModel.submitBatch(sUpdateGroupId).then(() => {
                         oGeneralModel.setProperty("/busy", false);
                         if (!this.getView().getModel().hasPendingChanges()) {

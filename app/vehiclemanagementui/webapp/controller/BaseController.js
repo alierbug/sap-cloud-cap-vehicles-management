@@ -72,7 +72,6 @@ sap.ui.define([
                         editable: "{= ${path:'status',targetType:'any'} === 'W' ? true : false}"
                     }),
                     new sap.m.Input({
-                        // value: "{projectID}",
                         textFormatMode: "Value",
                         selectedKey: "{projectID}",
                         editable: "{= ${path:'status',targetType:'any'} === 'W' ? true : false}",

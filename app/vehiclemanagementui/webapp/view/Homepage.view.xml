@@ -51,14 +51,18 @@
                                         level="H2"/>
                                     <ToolbarSpacer/>
                                     <Button icon="sap-icon://add"
-                                        press="onAddNewRow"/>
+                                        press="onAddNewRow"
+                                        enabled="{generalJsonModel>/buttonEnabled}"/>
                                     <Button icon="sap-icon://delete"
-                                        press="onDeleteRow"/>
+                                        press="onDeleteRow"
+                                        enabled="{generalJsonModel>/buttonEnabled}"/>
                                     <Button text="{i18n>duplicate}"
-                                        press="onDuplicateRows"/>
+                                        press="onDuplicateRows"
+                                        enabled="{generalJsonModel>/buttonEnabled}"/>
                                     <DatePicker id="dpPeriod"
                                         displayFormat="MM/yyyy"
-                                        change="onChangePeriod">
+                                        change="onChangePeriod"
+                                        enabled="{generalJsonModel>/buttonEnabled}">
                                         <layoutData>
                                             <OverflowToolbarLayoutData priority="NeverOverflow"
                                                 maxWidth="8rem"/>
@@ -120,7 +124,8 @@
                             <ToolbarSpacer/>
                             <Button text="{i18n>save}"
                                 type="Accept"
-                                press="onSaveExpenses"/>
+                                press="onSaveExpenses"
+                                enabled="{generalJsonModel>/buttonEnabled}"/>
                         </content>
                     </OverflowToolbar>
                 </footer>
