@@ -1,48 +1,63 @@
 {
-    "name": "vehiclemanagement",
-    "version": "1.0.0",
-    "description": "Vehicle Management",
-    "repository": "https://github.com/alierbug/sap-cloud-cap-vehicles-management",
-    "license": "UNLICENSED",
-    "private": true,
-    "dependencies": {
-        "@sap/cds": "^5",
-        "express": "^4"
+  "name": "vehiclemanagement",
+  "version": "1.0.0",
+  "description": "Vehicle Management",
+  "repository": "https://github.com/alierbug/sap-cloud-cap-vehicles-management",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap/cds": "^5",
+    "@sap/hdi-deploy": "^4.3.3",
+    "@sap/xsenv": "^3.2.2",
+    "@sap/xssec": "^3.2.13",
+    "express": "^4",
+    "hdb": "^0.18.3",
+    "passport": "^0.5.2"
+  },
+  "devDependencies": {
+    "@sap/ux-specification": "^1.100.1",
+    "sqlite3": "^5.0.2"
+  },
+  "scripts": {
+    "start": "cds run",
+    "undeploy": "cf undeploy vehiclemanagement --delete-services --delete-service-keys"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "env": {
+      "es2020": true,
+      "node": true,
+      "jest": true,
+      "mocha": true
     },
-    "devDependencies": {
-        "@sap/ux-specification": "^1.100.1",
-        "sqlite3": "^5.0.2"
+    "globals": {
+      "SELECT": true,
+      "INSERT": true,
+      "UPDATE": true,
+      "DELETE": true,
+      "CREATE": true,
+      "DROP": true,
+      "CDL": true,
+      "CQL": true,
+      "CXL": true,
+      "cds": true
     },
-    "scripts": {
-        "start": "cds run",
-        "undeploy": "cf undeploy vehiclemanagement --delete-services --delete-service-keys"
+    "rules": {
+      "no-console": "off",
+      "require-atomic-updates": "off"
+    }
+  },
+  "sapux": [
+    "app/vehiclemanagementui"
+  ],
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "hana"
+      }
     },
-    "eslintConfig": {
-        "extends": "eslint:recommended",
-        "env": {
-            "es2020": true,
-            "node": true,
-            "jest": true,
-            "mocha": true
-        },
-        "globals": {
-            "SELECT": true,
-            "INSERT": true,
-            "UPDATE": true,
-            "DELETE": true,
-            "CREATE": true,
-            "DROP": true,
-            "CDL": true,
-            "CQL": true,
-            "CXL": true,
-            "cds": true
-        },
-        "rules": {
-            "no-console": "off",
-            "require-atomic-updates": "off"
-        }
-    },
-    "sapux": [
-        "app/vehiclemanagementui"
-    ]
+    "hana": {
+      "deploy-format": "hdbtable"
+    }
+  }
 }

@@ -35,7 +35,6 @@ service VehicleManagement @(impl : './main-service.js') {
         toProjects
     };
 
-    @cds.persistence.skip
     entity PersonnelInformation as projection on Personnels {
         key email,
             personnelNo,

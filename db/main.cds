@@ -58,14 +58,14 @@ entity Personnels {
 
 entity Departments {
     key departmentID   : String(4);
-        departmentName : String(100);
+        departmentName : localized String(100);
         toPersonnels   : Association to many Personnels
                              on toPersonnels.toDepartments = $self;
 };
 
 entity Levels {
     key levelID    : String(2);
-        levelDescr : String(50);
+        levelDescr : localized String(50);
 };
 
 entity Projects {

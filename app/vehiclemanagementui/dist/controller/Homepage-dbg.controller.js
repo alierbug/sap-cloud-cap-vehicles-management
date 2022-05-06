@@ -317,7 +317,7 @@ sap.ui.define([
                 oEvent.getSource().getBinding("items").filter(oFilter);
             },
             onValueProjectConfirm: function (oEvent) {
-                let iSelectedProject = + oEvent.getParameter("selectedItem").getDescription().replaceAll(".", "");
+                let iSelectedProject = + oEvent.getParameter("selectedItem").getDescription();
                 this._oProjectInput.setSelectedKey(iSelectedProject);
             }
         });

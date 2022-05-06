@@ -1,0 +1,135 @@
+<mvc:View controllerName="ndbs.ui.vehiclemanagementui.controller.Homepage"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout"
+    xmlns:uxap="sap.uxap"
+    xmlns:core="sap.ui.core">
+    <Shell appWidthLimited="false">
+        <app>
+            <Page id="homepage"
+                showHeader="false"
+                busy="{generalJsonModel>/busy}"
+                showFooter="true">
+                <content>
+                    <uxap:ObjectPageHeaderContent id="ophcExpensesHeader">
+                        <uxap:content>
+                            <layout:VerticalLayout>
+                                <Text text="{i18n>licencePlate}"/>
+                                <ObjectIdentifier title="{toVehicles/licencePlate}" />
+                            </layout:VerticalLayout>
+                            <layout:VerticalLayout>
+                                <Text text="{i18n>totalTrip}"/>
+                                <ObjectNumber class="sapUiTinyMarginTop"
+                                    number="{path:'generalJsonModel>/totalTrip', type: 'sap.ui.model.type.Float'}"
+                                    unit="{generalJsonModel>/distanceUnit}"/>
+                            </layout:VerticalLayout>
+                            <layout:VerticalLayout>
+                                <Text text="{i18n>totalAmount}"/>
+                                <ObjectNumber class="sapUiTinyMarginTop"
+                                    number="{
+                                      parts:[{path:'generalJsonModel>/totalAmount'},{path:'generalJsonModel>/currency_code'}],
+						              type: 'sap.ui.model.type.Currency',
+						              formatOptions: {showMeasure: false}
+                                    }"
+                                    unit="{generalJsonModel>/currency_code}"/>
+                            </layout:VerticalLayout>
+                            <layout:VerticalLayout>
+                                <Text text="{i18n>status}"/>
+                                <ObjectStatus text="{generalJsonModel>/expenseStatusText}"
+                                    state="{generalJsonModel>/expenseStatus}"/>
+                            </layout:VerticalLayout>
+                        </uxap:content>
+                    </uxap:ObjectPageHeaderContent>
+                    <Table id="tblExpenses"
+                        mode="MultiSelect"
+                        inset="false">
+                        <headerToolbar>
+                            <OverflowToolbar>
+                                <content>
+                                    <Title text="{i18n>expenses}"
+                                        level="H2"/>
+                                    <ToolbarSpacer/>
+                                    <Button icon="sap-icon://add"
+                                        press="onAddNewRow"
+                                        enabled="{generalJsonModel>/buttonEnabled}"/>
+                                    <Button icon="sap-icon://delete"
+                                        press="onDeleteRow"
+                                        enabled="{generalJsonModel>/buttonEnabled}"/>
+                                    <Button text="{i18n>duplicate}"
+                                        press="onDuplicateRows"
+                                        enabled="{generalJsonModel>/buttonEnabled}"/>
+                                    <DatePicker id="dpPeriod"
+                                        displayFormat="MM/yyyy"
+                                        change="onChangePeriod"
+                                        enabled="{generalJsonModel>/buttonEnabled}">
+                                        <layoutData>
+                                            <OverflowToolbarLayoutData priority="NeverOverflow"
+                                                maxWidth="8rem"/>
+                                        </layoutData>
+                                    </DatePicker>
+                                </content>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column>
+                                <Text text="{i18n>date}"/>
+                            </Column>
+                            <Column>
+                                <Text text="{i18n>project}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>expenseType}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>fromLocation}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>destination}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>isOutofTown}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>distance}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>unit}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>amount}"/>
+                            </Column>
+                            <Column demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>status}"/>
+                            </Column>
+                        </columns>
+                    </Table>
+                </content>
+                <footer>
+                    <OverflowToolbar>
+                        <content>
+                            <Button icon="sap-icon://alert"
+                                text="{= ${message>/}.length }"
+                                visible="{= ${message>/}.length > 0 }"
+                                type="Emphasized"
+                                press="onMessagePopoverPress" />
+                            <ToolbarSpacer/>
+                            <Button text="{i18n>save}"
+                                type="Accept"
+                                press="onSaveExpenses"
+                                enabled="{generalJsonModel>/buttonEnabled}"/>
+                        </content>
+                    </OverflowToolbar>
+                </footer>
+            </Page>
+        </app>
+    </Shell>
+</mvc:View>

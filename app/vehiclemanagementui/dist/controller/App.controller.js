@@ -1,0 +1,1 @@
+sap.ui.define(["ndbs/ui/vehiclemanagementui/controller/BaseController"],function(e){"use strict";return e.extend("ndbs.ui.vehiclemanagementui.controller.App",{onInit:function(){}})});

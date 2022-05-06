@@ -1,0 +1,1 @@
+sap.ui.define([],function(){"use strict";return{formatExpenseStatusIcon:function(e){let r="";switch(e){case"A":r="sap-icon://sys-enter-2";break;case"W":r="sap-icon://alert";break;case"R":r="sap-icon://error";break}return r},formatExpenseStatusState:function(e){let r="";switch(e){case"A":r="Success";break;case"W":r="Warning";break;case"R":r="Error";break}return r}}});
