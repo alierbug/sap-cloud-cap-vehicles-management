@@ -81,6 +81,8 @@ modules:
 resources:
   - name: vehiclemanagement-destination-service
     type: org.cloudfoundry.managed-service
+    requires:
+    - name: srv-api 
     parameters:
       config:
         HTML5Runtime_enabled: true
@@ -92,6 +94,13 @@ resources:
                 ProxyType: Internet
                 Type: HTTP
                 URL: 'https://ui5.sap.com'
+              - Authentication: NoAuthentication
+                Name: vehicle-app-api
+                ProxyType: Internet
+                Type: HTTP
+                URL: ~{srv-api/srv-url}
+                HTML5.ForwardAuthToken: true
+                HTML5.DynamicDestination: true
             existing_destinations_policy: update
         version: 1.0.0
       service: destination
