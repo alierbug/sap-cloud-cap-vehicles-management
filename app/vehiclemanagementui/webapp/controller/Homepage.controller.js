@@ -92,17 +92,24 @@ sap.ui.define([
                                     bFetchData = false,
                                     bButtonEnabled = true;
 
-                                this._iPersonnelNo = oData.personnelNo;
+                                if (oData) {
+                                    this._iPersonnelNo = oData.personnelNo;
 
-                                if (oData.toVehicles) {
-                                    sStatusText = oResourceBundle.getText("updatable");
-                                    sStatus = "Success";
-                                    bFetchData = true;
+                                    if (oData.toVehicles) {
+                                        sStatusText = oResourceBundle.getText("updatable");
+                                        sStatus = "Success";
+                                        bFetchData = true;
+                                    } else {
+                                        sStatusText = oResourceBundle.getText("noVehicle", [oData.personnelNo, sFormattedPeriod]);
+                                        sStatus = "Error";
+                                        bButtonEnabled = false;
+                                    }
                                 } else {
-                                    sStatusText = oResourceBundle.getText("noVehicle", [oData.personnelNo, sFormattedPeriod]);
                                     sStatus = "Error";
+                                    sStatusText = oResourceBundle.getText("personnelNotFound");
                                     bButtonEnabled = false;
                                 }
+
                                 oGeneralModel.setProperty("/expenseStatusText", sStatusText);
                                 oGeneralModel.setProperty("/expenseStatus", sStatus);
                                 oGeneralModel.setProperty("/busy", false);
